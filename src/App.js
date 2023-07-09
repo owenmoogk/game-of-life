@@ -49,7 +49,6 @@ export default function App() {
   }
 
   function tickFunction(){
-    console.log("HERE")
     // 0 means kill, 1 means spawn
     let transformArray = Array.from(Array(gridHeight), _ => Array(gridWidth).fill(0))
 
@@ -140,58 +139,6 @@ export default function App() {
     }
   }
 
-  // paint function takes a event and paints color onto the screen
-  // click override is just saying it was a click event and not mouse movement, so it doesnt pass a button, we have to manually set it
-  function paint(e, clickOverride = false) {
-
-    if ((window.event.buttons !== 0 || clickOverride) && !running) {
-      // big math to figure out which cell the mouse is over
-      var col = Math.floor((e.clientX - ((window.innerWidth - document.getElementById('grid').offsetWidth) / 2)) / document.getElementsByClassName('row')[0].childNodes[0].offsetWidth)
-      var row = Math.floor((e.clientY - 90) / boxSize)
-
-      var element = document.getElementById('row' + row + 'col' + col)
-      if (!element) {
-        return
-      }
-
-      // paint the boxes when clicked, including the ones in between because it doesn't fire enough
-      if (!lastClickedCoords) {
-        var currentRow = row
-        var currentCol = col
-      }
-      else {
-        currentRow = lastClickedCoords[0]
-        currentCol = lastClickedCoords[1]
-      }
-
-      do {
-        if (row > currentRow) {
-          currentRow += 1
-        }
-        else if (row < currentRow) {
-          currentRow -= 1
-        }
-        if (col > currentCol) {
-          currentCol += 1
-        }
-        else if (col < currentCol) {
-          currentCol -= 1
-        }
-
-        if (window.event.buttons === 1) {
-          document.getElementById('row' + currentRow + 'col' + currentCol).classList.add('alive')
-        }
-        else if (window.event.buttons === 2) {
-          document.getElementById('row' + currentRow + 'col' + currentCol).classList.remove("alive")
-        }
-      } while (currentRow !== row || currentCol !== col);
-      lastClickedCoords = [row, col]
-    }
-    else {
-      lastClickedCoords = null
-    }
-  }
-
   // no context menu, reload button pops up on resize
   window.addEventListener('contextmenu', e => e.preventDefault())
   window.addEventListener('resize', e => document.getElementById('resizeAlert').style.display = 'block')
@@ -200,8 +147,6 @@ export default function App() {
 
   // default cell size
   var boxSize = 20
-  // used to trace the mouse, as the events don't trigger fast enough for me :/
-  var lastClickedCoords = null
 
   var gridHeight = Math.floor((window.innerHeight - 90) / boxSize)
   var gridWidth = Math.floor((window.innerWidth) / boxSize)
@@ -228,7 +173,7 @@ export default function App() {
         <p>Sim Speed (ms):</p>
         <input id='simSpeed' type='number' placeholder='100' onChange={(e) => timeDelay = e.target.value}/>
       </div>
-      <div id='grid' onMouseMove={e => paint(e)} onMouseDown={e => paint(e, true)}>
+      <div id='grid'>
         {makeGrid().map((row, key) => {
           return (
             <div className='row' id={key}>
